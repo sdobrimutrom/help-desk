@@ -7,6 +7,7 @@ class CategorySerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class CommentSerializer(serializers.ModelSerializer):
+    author = serializers.ReadOnlyField(source='author.id')
     author_username = serializers.ReadOnlyField(source='author.username')
 
     class Meta:
@@ -14,7 +15,9 @@ class CommentSerializer(serializers.ModelSerializer):
         fields = ['id', 'ticket', 'author', 'author_username', 'content', 'image', 'created_at']
 
 class TicketSerializer(serializers.ModelSerializer):
+    created_by = serializers.ReadOnlyField(source='created_by.id')  # 👈 важно!
     created_by_username = serializers.ReadOnlyField(source='created_by.username')
+    assigned_to = serializers.PrimaryKeyRelatedField(read_only=True)
     assigned_to_username = serializers.ReadOnlyField(source='assigned_to.username')
 
     class Meta:
@@ -23,6 +26,6 @@ class TicketSerializer(serializers.ModelSerializer):
             'id', 'title', 'description', 'category', 'status',
             'created_by', 'created_by_username',
             'assigned_to', 'assigned_to_username',
-            'image_before', 'image_after',
+            'image_before',
             'created_at', 'updated_at'
         ]

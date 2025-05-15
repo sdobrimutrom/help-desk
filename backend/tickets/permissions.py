@@ -15,3 +15,9 @@ class CanCommentOnTicket(BasePermission):
         if user.is_employee():
             return ticket.created_by == user
         return False
+    
+class CanDeleteTicket(BasePermission):
+    def has_object_permission(self, request, view, obj):
+        if request.method == "DELETE":
+            return obj.created_by == request.user or request.user.is_admin()
+        return True
