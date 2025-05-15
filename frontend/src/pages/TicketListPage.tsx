@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { fetchTickets } from "../api/tickets";
+import { fetchTickets, deleteTicket } from "../api/tickets";
 
 interface Ticket {
     id: number;
@@ -19,6 +19,16 @@ export default function TicketListPage() {
             .catch(() => setError("Failed to load tickets"));
     }, []);
 
+    function handleDelete(id: number) {
+        if (window.confirm("Delete ticket?")) {
+            deleteTicket(id).then(success => {
+                if (success) {
+                    setTickets(prev => prev.filter(t => t.id !== id));
+                }
+            });
+        }
+    }
+
     return (
         <div>
             <h2>My tickets</h2>
@@ -27,9 +37,11 @@ export default function TicketListPage() {
                 {tickets.map((ticket) => (
                     <li key={ticket.id}>
                         #{ticket.id}: {ticket.title} - <b>{ticket.status}</b> - {ticket.created_at.slice(0,10)}
+                        <button onClick={() => handleDelete(ticket.id)}>Delete</button>
                     </li>
                 ))}
             </ul>
         </div>
     );
 }
+

@@ -40,3 +40,16 @@ export async function fetchCategories(): Promise<any[]> {
     if (!response.ok) throw new Error("Failed to load categories");
     return await response.json();
 }
+
+export async function deleteTicket(id: number): Promise<boolean> {
+    const token = localStorage.getItem("access_token");
+
+    const response = await fetch(`http://localhost:8000/api/tickets/${id}/`, {
+        method: "DELETE",
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+    });
+
+    return response.ok;
+}
