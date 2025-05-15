@@ -22,6 +22,7 @@ class Ticket(models.Model):
     assigned_to = models.ForeignKey(User, related_name='assigned_tickets', on_delete=models.SET_NULL, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    image_before = models.ImageField(upload_to='tickets/before', null=True, blank=True)
 
     def __str__(self):
         return f"{self.title} ({self.get_status_display()})"
@@ -31,6 +32,7 @@ class Comment(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     content = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
+    image = models.ImageField(upload_to='comments/', null = True, blank=True)
 
     def __str__(self):
         return f"Комментарий от {self.author.username} к {self.ticket.title}"
