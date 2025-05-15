@@ -39,3 +39,21 @@ export async function fetchCurrentUser(): Promise<any> {
 
     return await response.json();
 }
+
+export async function changePassword(oldPassword: string, newPassword: string): Promise<boolean> {
+    const token = localStorage.getItem("access_token");
+
+    const response = await fetch("http://localhost:8000/api/change-password/", {
+        method: "POST",
+        headers: {
+            "Content-type": "application/json",
+            Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+            old_password: oldPassword,
+            new_password: newPassword,
+        }),
+    });
+
+    return response.ok;
+}

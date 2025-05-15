@@ -4,6 +4,7 @@ import RegisterPage from "./pages/RegisterPage";
 import TicketListPage from "./pages/TicketListPage";
 import CreateTicketPage from "./pages/CreateTicketPage";
 import TicketDetailsPage from "./pages/TicketDetailsPage";
+import ChangePasswordPage from "./pages/ChangePasswordPage";
 import ProfilePage from "./pages/ProfilePage";
 import UserInfo from "./components/UserInfo";
 import PrivateRoute from "./components/PrivateRoute";
@@ -46,6 +47,14 @@ function App() {
           element={
             <PrivateRoute>
               <ProfilePage/>
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/change-password"
+          element={
+            <PrivateRoute>
+              <ChangePasswordPage/>
             </PrivateRoute>
           }
         />
