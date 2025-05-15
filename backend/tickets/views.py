@@ -3,6 +3,9 @@ from .models import Ticket, Comment, Category
 from .serializers import TicketSerializer, CommentSerializer, CategorySerializer
 from rest_framework.permissions import IsAuthenticated
 from .permissions import CanCommentOnTicket
+import logging
+
+logger = logging.getLogger('helpdesk')
 
 class TicketViewSet(viewsets.ModelViewSet):
     queryset = Ticket.objects.all()
@@ -19,7 +22,8 @@ class TicketViewSet(viewsets.ModelViewSet):
             return Ticket.objects.filter(created_by=user).order_by('-created_at')
 
     def perform_create(self, serializer):
-        serializer.save(created_by=self.request.user)
+        ticket = serializer.save(created_by=self.request.user)
+        logger.info(f"[TICKET CREATED] {self.request.user.username} created ticket ID {ticket.id}")
 
 class CommentViewSet(viewsets.ModelViewSet):
     queryset = Comment.objects.all().order_by('created_at')
@@ -27,7 +31,8 @@ class CommentViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated, CanCommentOnTicket]
 
     def perform_create(self, serializer):
-        serializer.save(author=self.request.user)
+        comment = serializer.save(author=self.request.user)
+        logger.info(f"[COMMENT ADDED] {self.request.user.username} added a comment to ticket {comment.ticket.id}")
 
     def get_queryset(self):
         user = self.request.user
