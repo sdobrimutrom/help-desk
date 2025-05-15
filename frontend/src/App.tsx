@@ -4,6 +4,7 @@ import RegisterPage from "./pages/RegisterPage";
 import TicketListPage from "./pages/TicketListPage";
 import CreateTicketPage from "./pages/CreateTicketPage";
 import TicketDetailsPage from "./pages/TicketDetailsPage";
+import ProfilePage from "./pages/ProfilePage";
 import UserInfo from "./components/UserInfo";
 import PrivateRoute from "./components/PrivateRoute";
 
@@ -37,6 +38,14 @@ function App() {
           element = {
             <PrivateRoute>
               <TicketDetailsPage/>
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/profile"
+          element={
+            <PrivateRoute>
+              <ProfilePage/>
             </PrivateRoute>
           }
         />
