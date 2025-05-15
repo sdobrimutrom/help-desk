@@ -3,6 +3,7 @@ import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import TicketListPage from "./pages/TicketListPage";
 import CreateTicketPage from "./pages/CreateTicketPage";
+import TicketDetailsPage from "./pages/TicketDetailsPage";
 import UserInfo from "./components/UserInfo";
 import PrivateRoute from "./components/PrivateRoute";
 
@@ -29,6 +30,13 @@ function App() {
           element={
             <PrivateRoute>
               <CreateTicketPage/>
+            </PrivateRoute>
+          }
+        />
+        <Route path = "/tickets/:id"
+          element = {
+            <PrivateRoute>
+              <TicketDetailsPage/>
             </PrivateRoute>
           }
         />
