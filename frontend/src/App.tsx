@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import TicketListPage from "./pages/TicketListPage";
+import CreateTicketPage from "./pages/CreateTicketPage";
 import UserInfo from "./components/UserInfo";
 import PrivateRoute from "./components/PrivateRoute";
 
@@ -21,6 +22,13 @@ function App() {
           element = {
             <PrivateRoute>
               <TicketListPage/>
+            </PrivateRoute>
+          }
+        />
+        <Route path="/tickets/new"
+          element={
+            <PrivateRoute>
+              <CreateTicketPage/>
             </PrivateRoute>
           }
         />
