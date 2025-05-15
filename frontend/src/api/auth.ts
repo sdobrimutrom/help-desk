@@ -14,6 +14,16 @@ export async function loginUser(username: string, password: string): Promise<str
     return data.access;
 }
 
+export async function registerUser(username: string, password: string, email?: string): Promise<boolean> {
+    const response = await fetch("http://localhost:8000/api/register/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json"},
+        body: JSON.stringify({ username, password, email }),
+    });
+
+    return response.ok;
+}
+
 export async function fetchCurrentUser(): Promise<any> {
     const token = localStorage.getItem("access_token");
 
