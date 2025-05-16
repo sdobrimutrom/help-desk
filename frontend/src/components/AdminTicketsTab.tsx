@@ -1,0 +1,81 @@
+import { useEffect, useState } from "react";
+
+export default function TicketsTab() {
+    const [tickets, setTickets] = useState<any[]>([]);
+    const [technicians, setTechnicians] = useState<any[]>([]);
+    const token = localStorage.getItem("access_token");
+    
+    async function fetchTickets() {
+        const res = await fetch("http://localhost:8000/api/tickets/", {
+            headers: { Authorization: `Bearer ${token}` },
+        });
+        if (res.ok) setTickets(await res.json());
+    }
+
+    async function fetchTechnicians() {
+        const res = await fetch ("http://localhost:8000/api/users", {
+            headers: { Authorization: `Bearer ${token}` },
+        });
+        if (res.ok) {
+            const all = await res.json();
+            setTechnicians(all.filter((u: any) => u.role === "technician"));
+        }
+    }
+
+    useEffect(() => {
+        fetchTickets();
+        fetchTechnicians();
+    }, []);
+
+    async function handleDelete(id: number) {
+        await fetch(`http://localhost:8000/api/tickets/${id}/`, {
+            method: 'DELETE',
+            headers: { Authorization: `Bearer ${token}` },
+        });
+        fetchTickets();
+    }
+
+    async function assignTechnician(ticketId: number, technicianId: string) {
+        await fetch(`http://localhost:8000/api/tickets/${ticketId}/`, {
+            method: 'PATCH',
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({ assigned_to: technicianId }),
+        });
+        fetchTickets();
+    }
+
+    return (
+        <div>
+            <h3>All tickets</h3>
+            <ul className="list-group">
+                {tickets.map((ticket) => (
+                    <li className="list-group-item" key = {ticket.id}>
+                        <div className="d-flex justify-content-between align-items-center">
+                            <span>
+                                #{ticket.id}: {ticket.title} ({ticket.status})
+                            </span>
+                            <div className="d-flex gap-2">
+                                <select
+                                    className="form-select form-select-sm"
+                                    value={ticket.assigned_to || ""}
+                                    onChange={(e) => assignTechnician(ticket.id, e.target.value)}
+                                >
+                                    <option value="">Not assigned</option>
+                                    {technicians.map((t) => (
+                                        <option key={t.id} value={t.id}>
+                                            {t.username}
+                                        </option>
+                                    ))}
+                                </select>
+                                <button className="btn btn-sm btn-danger" onClick={() => handleDelete(ticket.id)}>Delete</button>
+                            </div>
+                        </div>
+                    </li>
+                ))}
+            </ul>
+        </div>
+    );
+}

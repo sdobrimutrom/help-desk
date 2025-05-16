@@ -9,6 +9,7 @@ import HomePage from "./pages/HomePage";
 import ProfilePage from "./pages/ProfilePage";
 import AssignedTicketsPage from "./pages/AssignedTicketsPage";
 import PrivateRoute from "./components/PrivateRoute";
+import AdminPanelPage from "./pages/AdminPanelPage";
 
 function App() {
   return(
@@ -73,6 +74,15 @@ function App() {
           element={
             <PrivateRoute>
               <ChangePasswordPage/>
+            </PrivateRoute>
+          }
+        />
+
+        <Route
+          path="/admin"
+          element={
+            <PrivateRoute>
+              <AdminPanelPage/>
             </PrivateRoute>
           }
         />

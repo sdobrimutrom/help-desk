@@ -5,6 +5,7 @@ from rest_framework.response import Response
 from .models import Ticket, Comment, Category
 from .serializers import TicketSerializer, CommentSerializer, CategorySerializer
 from .permissions import CanCommentOnTicket, CanDeleteTicket
+from users.models import User
 import logging
 
 logger = logging.getLogger('helpdesk')
@@ -26,6 +27,18 @@ class TicketViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         ticket = serializer.save(created_by=self.request.user)
         logger.info(f"[TICKET CREATED] {self.request.user.username} created ticket ID {ticket.id}")
+
+    def partial_update(self, request, *args, **kwargs):
+        instance = self.get_object()
+        if request.user.is_admin() and "assigned_to" in request.data:
+            user_id = request.data.get("assigned_to")
+            try:
+                technician = User.objects.get(id = user_id, role = User.Role.TECHNICIAN)
+                instance.assigned_to = technician
+                instance.save()
+            except User.DoesNotExist:
+                return Response({"error": "Technician is not found"}, status=400)
+            return super().partial_update(request, *args, **kwargs)
 
 class CommentViewSet(viewsets.ModelViewSet):
     queryset = Comment.objects.all().order_by('-created_at')
