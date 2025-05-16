@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { fetchTicket, fetchComments, addComment } from "../api/tickets";
+import { fetchTicket, fetchComments, addComment, updateTicketStatus } from "../api/tickets";
+import { fetchCurrentUser } from "../api/auth";
 
 export default function TicketDetailsPage() {
     const { id } = useParams();
@@ -11,6 +12,12 @@ export default function TicketDetailsPage() {
     const [content, setContent] = useState("");
     const [image, setImage] = useState<File | null>(null);
     const [error, setError] = useState("");
+
+    const [user, setUser] = useState<any>(null);
+
+    useEffect(() => {
+        fetchCurrentUser().then(setUser);
+    }, []);
 
     useEffect(() => {
         fetchTicket(ticketId).then(setTicket).catch(() => setError("Failed to load ticket"));
@@ -30,14 +37,38 @@ export default function TicketDetailsPage() {
         }
     }
 
+    async function handleStatusChange(newStatus: string) {
+        const success = await updateTicketStatus(ticketId, newStatus);
+        if (success) {
+            setTicket({ ...ticket, status: newStatus });
+        } else {
+            alert("Failed to change status");
+        }
+    }
+
     if (!ticket) return <p>Loading...</p>;
 
     return (
         <div>
-            <h2>Заявка #{ticket.id}</h2>
-            <p><b>Статус:</b> {ticket.status}</p>
-            <p><b>Категория:</b> {ticket.category}</p>
-            <p><b>Описание:</b> {ticket.description}</p>
+            <h2>Ticket #{ticket.id}</h2>
+            <p><b>Status:</b> {ticket.status}</p>
+            {user?.role === 'technician' && (
+                <div className="mt-3">
+                    <p><b>Change status:</b></p>
+                    {ticket.status === "open" && (
+                        <button className="btn btn-warning me-2" onClick={() => handleStatusChange("in_progress")}>
+                            Take the ticket on work
+                        </button>
+                    )}
+                    {ticket.status !== "closed" && (
+                        <button className="btn btn-success" onClick={() => handleStatusChange("closed")}>
+                            Close ticket
+                        </button>
+                    )}
+                </div>
+            )}
+            <p><b>Category:</b> {ticket.category}</p>
+            <p><b>Description:</b> {ticket.description}</p>
             {ticket.image_before && (
                 <img
                 src={`http://localhost:8000${ticket.image_before}`}
@@ -46,7 +77,7 @@ export default function TicketDetailsPage() {
                 />
             )}
             <hr />
-            <h3>Комментарии</h3>
+            <h3>Comments</h3>
             <ul>
                 {comments.map(c => (
                 <li key={c.id}>
@@ -65,7 +96,7 @@ export default function TicketDetailsPage() {
             <form onSubmit={handleSubmit}>
                 <textarea value={content} onChange={e => setContent(e.target.value)} required />
                 <input type="file" accept="image/*" onChange={e => setImage(e.target.files?.[0] || null)} />
-                <button type="submit">Оставить комментарий</button>
+                <button type="submit">Add comment</button>
             </form>
         </div> 
     );

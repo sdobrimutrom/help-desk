@@ -92,3 +92,18 @@ export async function addComment(ticketId: number, content: string, image?: File
 
     return response.ok;
 }
+
+export async function updateTicketStatus(ticketId: number, newStatus: string): Promise<boolean> {
+    const token = localStorage.getItem("access_token");
+
+    const response = await fetch(`http://localhost:8000/api/tickets/${ticketId}/`, {
+        method: "PATCH",
+        headers: {
+            "Content-type": "application/json",
+            Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ status: newStatus }),
+    });
+
+    return response.ok;
+}
