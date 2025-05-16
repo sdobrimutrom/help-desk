@@ -1,7 +1,7 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
-import TicketListPage from "./pages/TicketListPage";
+import MyTicketsPage from "./pages/MyTicketsPage";
 import CreateTicketPage from "./pages/CreateTicketPage";
 import TicketDetailsPage from "./pages/TicketDetailsPage";
 import ChangePasswordPage from "./pages/ChangePasswordPage";
@@ -30,7 +30,7 @@ function App() {
         <Route path="/tickets"
           element = {
             <PrivateRoute>
-              <TicketListPage/>
+              <MyTicketsPage/>
             </PrivateRoute>
           }
         />
@@ -68,7 +68,7 @@ function App() {
             </PrivateRoute>
           }
         />
-        
+
       </Routes>
     </Router>
   );

@@ -8,7 +8,7 @@ export async function fetchTickets(): Promise<any[]> {
     });
 
     if (!response.ok) {
-        throw new Error("Can't load tickets");
+        throw new Error("Failed to load tickets");
     }
 
     return await response.json();
