@@ -14,6 +14,7 @@ function App() {
     <Router>
       <Routes>
         <Route path="/" element={<LoginPage/>}/>
+        <Route path="/register" element={<RegisterPage />}/>
         <Route path="/me"
         element={
           <PrivateRoute>
@@ -58,7 +59,6 @@ function App() {
             </PrivateRoute>
           }
         />
-        <Route path="/register" element={<RegisterPage />}/>
       </Routes>
     </Router>
   );
