@@ -7,7 +7,7 @@ import TicketDetailsPage from "./pages/TicketDetailsPage";
 import ChangePasswordPage from "./pages/ChangePasswordPage";
 import HomePage from "./pages/HomePage";
 import ProfilePage from "./pages/ProfilePage";
-import UserInfo from "./components/UserInfo";
+import AssignedTicketsPage from "./pages/AssignedTicketsPage";
 import PrivateRoute from "./components/PrivateRoute";
 
 function App() {
@@ -39,6 +39,14 @@ function App() {
           element={
             <PrivateRoute>
               <CreateTicketPage/>
+            </PrivateRoute>
+          }
+        />
+
+        <Route path="/assigned"
+          element={
+            <PrivateRoute>
+              <AssignedTicketsPage/>
             </PrivateRoute>
           }
         />
