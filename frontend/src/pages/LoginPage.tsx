@@ -31,7 +31,7 @@ export default function LoginPage() {
                         <label className="form-label">Password</label>
                         <input type="password" className="form-control" value={password} onChange={e => setPassword(e.target.value)}/>
                     </div>
-                    {error && <div className="alert alerty-danger">{error}</div>}
+                    {error && <div className="alert alert-danger">{error}</div>}
                     <button className="btn btn-primary w-100" type="submit">Login</button>
                 </form>
                 <hr/>

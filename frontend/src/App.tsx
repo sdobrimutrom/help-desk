@@ -5,6 +5,7 @@ import TicketListPage from "./pages/TicketListPage";
 import CreateTicketPage from "./pages/CreateTicketPage";
 import TicketDetailsPage from "./pages/TicketDetailsPage";
 import ChangePasswordPage from "./pages/ChangePasswordPage";
+import HomePage from "./pages/HomePage";
 import ProfilePage from "./pages/ProfilePage";
 import UserInfo from "./components/UserInfo";
 import PrivateRoute from "./components/PrivateRoute";
@@ -14,14 +15,18 @@ function App() {
     <Router>
       <Routes>
         <Route path="/" element={<LoginPage/>}/>
+
         <Route path="/register" element={<RegisterPage />}/>
-        <Route path="/me"
-        element={
-          <PrivateRoute>
-            <UserInfo/>
-          </PrivateRoute>
+
+        <Route
+          path="/home"
+          element={
+            <PrivateRoute>
+              <HomePage/>
+            </PrivateRoute>
           }
         />
+
         <Route path="/tickets"
           element = {
             <PrivateRoute>
@@ -29,6 +34,7 @@ function App() {
             </PrivateRoute>
           }
         />
+
         <Route path="/tickets/new"
           element={
             <PrivateRoute>
@@ -36,6 +42,7 @@ function App() {
             </PrivateRoute>
           }
         />
+
         <Route path = "/tickets/:id"
           element = {
             <PrivateRoute>
@@ -43,6 +50,7 @@ function App() {
             </PrivateRoute>
           }
         />
+
         <Route
           path="/profile"
           element={
@@ -51,6 +59,7 @@ function App() {
             </PrivateRoute>
           }
         />
+
         <Route
           path="/change-password"
           element={
@@ -59,6 +68,7 @@ function App() {
             </PrivateRoute>
           }
         />
+        
       </Routes>
     </Router>
   );
