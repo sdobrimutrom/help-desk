@@ -51,6 +51,18 @@ export default function HomePage() {
                     </div>
                 )}
 
+                {user.role === "admin" && (
+                    <div className="col-md-4">
+                        <div className="card p-3 h-100 bg-light border border-primary">
+                            <h2>Admin panel</h2>
+                            <p>Users, tickets and categories management</p>
+                            <button className="btn btn-outline-primary" onClick={() => navigate("/admin")}>
+                                Show
+                            </button>
+                        </div>
+                    </div>
+                )}
+
                 <div className="col-md-4">
                     <div className="card p-3 h-100">
                         <h3>Profile</h3>
