@@ -31,6 +31,14 @@ export default function CategoriesTab() {
     fetchCategories();
   }, []);
 
+  async function handleDelete(id: number) {
+    const res = await fetch(`http://localhost:8000/api/categories/${id}/`, {
+      method: 'DELETE',
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (res.ok) fetchCategories();
+  }
+
   return (
     <div>
       <h5>Категории</h5>
@@ -40,7 +48,10 @@ export default function CategoriesTab() {
       </div>
       <ul className="list-group">
         {categories.map(c => (
-          <li className="list-group-item" key={c.id}>{c.name}</li>
+          <li className="list-group-item d-flex justify-content-between align-items-center" key={c.id}>
+          {c.name}
+          <button className="btn btn-sm btn-danger" onClick={() => handleDelete(c.id)}>Delete</button>
+          </li>
         ))}
       </ul>
     </div>
