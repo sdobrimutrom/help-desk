@@ -5,8 +5,12 @@ export default function UsersTab() {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [email, setEmail] = useState("");
+    const [filter, setFilter] = useState("all");
+    
+    const filteredUsers = users.filter(user => filter === "all" || user.role === filter);
 
     const token = localStorage.getItem("access_token");
+
 
     async function fetchUsers() {
         const res = await fetch("http://localhost:8000/api/users/", {
@@ -55,8 +59,16 @@ export default function UsersTab() {
     return (
         <div>
             <h3>Users list</h3>
+            <div className="mb-3">
+                <select className="form-select w-auto" value={filter} onChange={e => setFilter(e.target.value)}>
+                    <option value="all">All Users</option>
+                    <option value="employee">Employees</option>
+                    <option value="technician">Technicians</option>
+                    <option value="admin">Admins</option>
+                </select>
+            </div>
             <ul className="list-group mb-4">
-                {users.map(user => (
+                {filteredUsers.map(user => (
                     <li className="list-group-item d-flex justify-content-between" key={user.id}>
                         {user.username} ({user.role})
                         <button className="btn btn-sm btn-danger" onClick={() => handleDelete(user.id)}>
