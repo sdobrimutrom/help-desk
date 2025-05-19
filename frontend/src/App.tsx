@@ -10,6 +10,7 @@ import ProfilePage from "./pages/ProfilePage";
 import AssignedTicketsPage from "./pages/AssignedTicketsPage";
 import PrivateRoute from "./components/PrivateRoute";
 import AdminPanelPage from "./pages/AdminPanelPage";
+import Header from "./components/Header";
 
 function App() {
   return(
@@ -23,6 +24,7 @@ function App() {
           path="/home"
           element={
             <PrivateRoute>
+              <Header/>
               <HomePage/>
             </PrivateRoute>
           }
@@ -31,6 +33,7 @@ function App() {
         <Route path="/tickets"
           element = {
             <PrivateRoute>
+              <Header/>
               <MyTicketsPage/>
             </PrivateRoute>
           }
@@ -39,6 +42,7 @@ function App() {
         <Route path="/tickets/new"
           element={
             <PrivateRoute>
+              <Header/>
               <CreateTicketPage/>
             </PrivateRoute>
           }
@@ -47,6 +51,7 @@ function App() {
         <Route path="/assigned"
           element={
             <PrivateRoute>
+              <Header/>
               <AssignedTicketsPage/>
             </PrivateRoute>
           }
@@ -55,6 +60,7 @@ function App() {
         <Route path = "/tickets/:id"
           element = {
             <PrivateRoute>
+              <Header/>
               <TicketDetailsPage/>
             </PrivateRoute>
           }
@@ -64,6 +70,7 @@ function App() {
           path="/profile"
           element={
             <PrivateRoute>
+              <Header/>
               <ProfilePage/>
             </PrivateRoute>
           }
@@ -73,6 +80,7 @@ function App() {
           path="/change-password"
           element={
             <PrivateRoute>
+              <Header/>
               <ChangePasswordPage/>
             </PrivateRoute>
           }
@@ -82,11 +90,12 @@ function App() {
           path="/admin"
           element={
             <PrivateRoute>
+              <Header/>
               <AdminPanelPage/>
             </PrivateRoute>
           }
         />
-
+      
       </Routes>
     </Router>
   );
