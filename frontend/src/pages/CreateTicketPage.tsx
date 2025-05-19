@@ -64,7 +64,6 @@ export default function CreateTicketPage() {
                 className="form-select"
                 value={category}
                 onChange={e => setCategory(e.target.value)}
-                required
               >
                 <option value="">Choose Category</option>
                 {categories.map(cat => (

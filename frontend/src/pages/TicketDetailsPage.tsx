@@ -16,10 +16,7 @@ export default function TicketDetailsPage() {
     const [user, setUser] = useState<any>(null);
 
     useEffect(() => {
-        fetchCurrentUser().then(setUser);
-    }, []);
-
-    useEffect(() => {
+        fetchCurrentUser().then(setUser).catch(() => setError("Failed to load user data"));
         fetchTicket(ticketId).then(setTicket).catch(() => setError("Failed to load ticket"));
         fetchComments(ticketId).then(setComments).catch(() => setError("Failed to load comments"));
     }, [ticketId]);
@@ -46,58 +43,71 @@ export default function TicketDetailsPage() {
         }
     }
 
-    if (!ticket) return <p>Loading...</p>;
+    if (!ticket || !user) return <p className="text-center mt-4">Loading...</p>;
 
     return (
-        <div>
-            <h2>Ticket #{ticket.id}</h2>
-            <p><b>Status:</b> {ticket.status}</p>
-            {user?.role === 'technician' && (
-                <div className="mt-3">
-                    <p><b>Change status:</b></p>
-                    {ticket.status === "open" && (
-                        <button className="btn btn-warning me-2" onClick={() => handleStatusChange("in_progress")}>
-                            Take the ticket on work
-                        </button>
-                    )}
-                    {ticket.status !== "closed" && (
-                        <button className="btn btn-success" onClick={() => handleStatusChange("closed")}>
-                            Close ticket
-                        </button>
-                    )}
-                </div>
-            )}
-            <p><b>Category:</b> {ticket.category}</p>
-            <p><b>Description:</b> {ticket.description}</p>
-            {ticket.image_before && (
-                <img
-                src={`http://localhost:8000${ticket.image_before}`}
-                alt="до"
-                style={{ maxWidth: "300px", margin: "10px 0" }}
-                />
-            )}
-            <hr />
-            <h3>Comments</h3>
-            <ul>
-                {comments.map(c => (
-                <li key={c.id}>
-                    <b>{c.author_username}</b>: {c.content}
-                    {c.image && (
-                    <div>
-                        <img src={`http://localhost:8000${c.image}`} alt="коммент" style={{ maxWidth: "200px" }} />
+        <div className="container my-4">
+            <div className="card p-4 mb-4 shadow-sm">
+                <h4 className="mb-3">Ticket #{ticket.id}: {ticket.title}</h4>
+                <p><b>Category:</b> {ticket.category || "no category"}</p>
+                <p><b>Technician:</b> {ticket.assigned_to_username || "not assigned yet"}</p>
+                <p><b>Status:</b> {ticket.status}</p>
+                <p><b>Description:</b> {ticket.description}</p>
+                {ticket.image_before && (
+                    <div className="mb-3">
+                        <p><b>Image before:</b></p>
+                        <img src={ticket.image_before} alt="before" className="img-fluid rounded"/>
                     </div>
-                    )}
-                    <br /><small>{c.created_at.slice(0, 16).replace("T", " ")}</small>
-                </li>
-                ))}
-            </ul>
+                )}
+                {user.role === "technician" && (
+                    <div className="d-flex gap-2 mt-3">
+                        {ticket.status === "open" && (
+                            <button className="btn btn-warning" onClick={() => handleStatusChange("in_progress")}>Take to work</button>
+                        )}
+                        {ticket.status !== "closed" && (
+                            <button className="btn btn-success" onClick={() => handleStatusChange("closed")}>Close ticket</button>
+                        )}
+                    </div>
+                )}
+            </div>
 
-            <hr />
-            <form onSubmit={handleSubmit}>
-                <textarea value={content} onChange={e => setContent(e.target.value)} required />
-                <input type="file" accept="image/*" onChange={e => setImage(e.target.files?.[0] || null)} />
-                <button type="submit">Add comment</button>
-            </form>
-        </div> 
+            <h5 className="mb-3">Comments</h5>
+            <div className="mb-4">
+                {comments.length === 0 ? (
+                    <p>No comments yet</p>
+                ) : (
+                    comments.map(c => (
+                        <div key={c.id} className="card mb-3 p-3">
+                            <p className="mb-1"><b>{c.author_username}</b> <span className="text-muted">({c.created_at.slice(0, 16).replace("T", " ")})</span></p>
+                            <p>{c.content}</p>
+                            {c.image && (
+                                <img src={c.image} alt="comment" className="img-fluid rounded" style={{ maxWidth: "300px" }}/>
+                            )}
+                        </div>
+                    ))
+                )}
+            </div>
+
+            <div className="card p-3 shadow-sm">
+                <h6 className="mb-3">Add comment</h6>
+                <form onSubmit={handleSubmit}>
+                    <div className="mb-3">
+                        <textarea
+                            className="form-control"
+                            value={content}
+                            onChange={e => setContent(e.target.value)}
+                            placeholder="Your comment..."
+                            rows = {3}
+                            required
+                        />
+                    </div>
+                    <div className="mb-3">
+                        <input type="file" className="form-control" accept="image/*" onChange={e => setImage(e.target.files?.[0] || null)}/>
+                    </div>
+                    {error && <div className="alert alert-danger">{error}</div>}
+                    <button type="submit" className="btn btn-primary">Submit</button>
+                </form>
+            </div>
+        </div>
     );
 }
