@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { fetchCurrentUser } from "../api/auth";
 import { useNavigate } from "react-router-dom";
+import LogoutButton from "../components/LogoutButton";
 
 export default function HomePage() {
     const [user, setUser] = useState<any>(null);
@@ -20,6 +21,9 @@ export default function HomePage() {
     return (
         <div className="container mt-4">
             <h1 className="mb-4 text-center">Welcome, {user.username}!</h1>
+            <div className="d-flex justify-content-end mb-3">
+                <LogoutButton />
+            </div>
 
             <div className="row g-4">
                 {user.role === 'employee' && (

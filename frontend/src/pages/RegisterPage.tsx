@@ -35,7 +35,7 @@ export default function RegisterPage() {
                     </div>
                     <div className="mb-3">
                         <label className="form-label">Password</label>
-                        <input className="form-control" value={password} onChange={e => setPassword(e.target.value)}/>
+                        <input className="form-control" type="password" value={password} onChange={e => setPassword(e.target.value)}/>
                     </div>
                     <div className="mb-3">
                         <label className="form-label">E-mail</label>
