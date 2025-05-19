@@ -20,11 +20,13 @@ class RegisterView(generics.CreateAPIView):
         user = serializer.save()
         logger.info(f"[REGISTER] New User: {user.username}, role: {user.role}")
 
-class CurrentUserView(APIView):
-    def get(self, request):
-        serializer = UserSerializer(request.user)
-        return Response(serializer.data)
+class CurrentUserView(generics.RetrieveUpdateAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = UserSerializer
 
+    def get_object(self):
+        return self.request.user
+    
 class LoggingTokenObtainPairSerializer(TokenObtainPairSerializer):
     def validate(self, attrs):
         data = super().validate(attrs)

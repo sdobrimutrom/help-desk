@@ -28,15 +28,26 @@ export default function ChangePasswordPage() {
     }
 
       return (
-        <div>
-            <h2>Смена пароля</h2>
-            <form onSubmit={handleSubmit}>
-                <input type="password" placeholder="Старый пароль" value={oldPass} onChange={e => setOldPass(e.target.value)} required />
-                <input type="password" placeholder="Новый пароль" value={newPass} onChange={e => setNewPass(e.target.value)} required />
-                <input type="password" placeholder="Повторите новый пароль" value={confirmPass} onChange={e => setConfirmPass(e.target.value)} required />
-                <button type="submit">Изменить</button>
-                {error && <p style={{ color: "red" }}>{error}</p>}
-            </form>
+        <div className="container d-flex justify-content-center mt-5">
+            <div className="card p-4 shadow" style={{ maxWidth: "500px", width: "100%" }}>
+                <h4 className="text-center mb-4">Change password</h4>
+                <form onSubmit={handleSubmit}>
+                    <div className="mb-3">
+                        <label className="form-label">Current password</label>
+                        <input type="password" className="form-control" value={oldPass} onChange={e => setOldPass(e.target.value)} required/>
+                    </div>
+                    <div className="mb-3">
+                        <label className="form-label">New password</label>
+                        <input type="password" className="form-control" value={newPass} onChange={e => setNewPass(e.target.value)} required/>
+                    </div>
+                    <div className="mb-3">
+                        <label className="form-label">Confirm new password</label>
+                        <input type="password" className="form-control" value={confirmPass} onChange={e => setConfirmPass(e.target.value)} required/>
+                    </div>
+                    {error && <div className="alert alert-danger">{error}</div>}
+                    <button className="btn btn-primary w-100" type="submit">Change password</button>
+                 </form>
+            </div>
         </div>
   );
 }
