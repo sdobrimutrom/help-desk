@@ -38,7 +38,7 @@ class TicketViewSet(viewsets.ModelViewSet):
                 instance.save()
             except User.DoesNotExist:
                 return Response({"error": "Technician is not found"}, status=400)
-            return super().partial_update(request, *args, **kwargs)
+        return super().partial_update(request, *args, **kwargs)
 
 class CommentViewSet(viewsets.ModelViewSet):
     queryset = Comment.objects.all().order_by('-created_at')
