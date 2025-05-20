@@ -2,6 +2,7 @@ from rest_framework import viewsets, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from rest_framework.exceptions import PermissionDenied
 from django.core.cache import cache
 from .models import Ticket, Comment, Category
 from .serializers import TicketSerializer, CommentSerializer, CategorySerializer
@@ -58,7 +59,19 @@ class CommentViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated, CanCommentOnTicket]
 
     def perform_create(self, serializer):
-        comment = serializer.save(author=self.request.user)
+        user = self.request.user
+        ticket = serializer.validated_data.get("ticket")
+
+        if user.is_admin():
+            pass
+        elif user.is_technician() and ticket.assigned_to != user:
+            raise PermissionDenied("У вас нет доступа к этому тикету.")
+        elif user.is_employee() and ticket.created_by != user:
+            raise PermissionDenied("У вас нет доступа к этому тикету.")
+        elif not user.is_admin() and not user.is_technician() and not user.is_employee():
+            raise PermissionDenied("Роль не определена.")
+        
+        comment = serializer.save(author=user)
         logger.info(f"[COMMENT ADDED] {self.request.user.username} added a comment to ticket {comment.ticket.id}")
         cache.delete_pattern(f"comments_ticket_{comment.ticket_id}_*")
 
