@@ -2,6 +2,7 @@ from rest_framework import viewsets, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from django.core.cache import cache
 from .models import Ticket, Comment, Category
 from .serializers import TicketSerializer, CommentSerializer, CategorySerializer
 from .permissions import CanCommentOnTicket, CanDeleteTicket
@@ -17,15 +18,25 @@ class TicketViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
+        cache_key = f"ticket_list_{user.id}_{user.role}"
+        cached_qs = cache.get(cache_key)
+
+        if cached_qs:
+            return cached_qs
+
         if user.is_admin():
-            return Ticket.objects.all().order_by('-created_at')
+            qs = Ticket.objects.all()
         elif user.is_technician():
-            return Ticket.objects.filter(assigned_to=user).order_by('-created_at')
+            qs = Ticket.objects.filter(assigned_to=user)
         else:
-            return Ticket.objects.filter(created_by=user).order_by('-created_at')
+            qs = Ticket.objects.filter(created_by=user)
+        
+        cache.set(cache_key, qs, timeout=60)
+        return qs
 
     def perform_create(self, serializer):
         ticket = serializer.save(created_by=self.request.user)
+        cache.delete(f"ticket_list_{self.request.user.id}_employee")
         logger.info(f"[TICKET CREATED] {self.request.user.username} created ticket ID {ticket.id}")
 
     def partial_update(self, request, *args, **kwargs):
@@ -36,6 +47,7 @@ class TicketViewSet(viewsets.ModelViewSet):
                 technician = User.objects.get(id = user_id, role = User.Role.TECHNICIAN)
                 instance.assigned_to = technician
                 instance.save()
+                logger.info(f"[TICKET UPDATED] {self.request.user.username} updated ticket ID {ticket.id}")
             except User.DoesNotExist:
                 return Response({"error": "Technician is not found"}, status=400)
         return super().partial_update(request, *args, **kwargs)
@@ -48,14 +60,29 @@ class CommentViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         comment = serializer.save(author=self.request.user)
         logger.info(f"[COMMENT ADDED] {self.request.user.username} added a comment to ticket {comment.ticket.id}")
+        cache.delete_pattern(f"comments_ticket_{comment.ticket_id}_*")
 
     def get_queryset(self):
         user = self.request.user
+        ticket_id = self.request.query_params.get("ticket")
+
+        cache_key = f"comments_ticket_{ticket_id}_user_{user.id}_role_{user.role}"
+        cached = cache.get(cache_key)
+        if cached:
+            return cached
+
         if user.is_admin():
-            return Comment.objects.all()
-        if user.is_technician():
-            return Comment.objects.filter(ticket__assigned_to=user)
-        return Comment.objects.filter(ticket__created_by=user)
+            queryset = Comment.objects.all()
+        elif user.is_technician():
+            queryset = Comment.objects.filter(ticket__assigned_to=user)
+        else:
+            queryset = Comment.objects.filter(ticket__created_by=user)
+
+        if ticket_id:
+            queryset = queryset.filter(ticket_id=ticket_id)
+
+        cache.set(cache_key, queryset, timeout=60)
+        return queryset
     
     def options(self, request, *args, **kwargs):
         response = super().options(request, *args, **kwargs)

@@ -203,3 +203,13 @@ CSRF_TRUSTED_ORIGINS = [
     "http://localhost:3000"
 ]
 CSRF_COOKIE_SECURE = False
+
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://localhost:6379/1",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
+    }
+}
