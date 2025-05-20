@@ -69,15 +69,21 @@ export default function UsersTab() {
             </div>
             <ul className="list-group mb-4">
                 {filteredUsers.map(user => (
-                    <li className="list-group-item d-flex justify-content-between" key={user.id}>
-                        {user.username} ({user.role})
-                        <button className="btn btn-sm btn-danger" onClick={() => handleDelete(user.id)}>
-                            Delete
-                        </button>
+                    <li className="list-group-item" key={user.id}>
+                        <div className="d-flex justify-content-between align-items-center">
+                            <div>
+                                <b>{user.username}</b> ({user.role})<br/>
+                                <small>Email: {user.email || "—"}</small> <br/>
+                                <small>Name: {user.first_name || "—"} {user.last_name || "—"}</small>
+                            </div>
+                            <button className="btn btn-sm btn-danger" onClick={() => handleDelete(user.id)}>
+                                Delete
+                            </button>
+                        </div>
                     </li>
                 ))}
             </ul>
-
+                
             <h5>Create technician</h5>
             <div className="row g-2">
                 <div className="col-md-3"><input className="form-control" placeholder="Login" value={username} onChange={e => setUsername(e.target.value)} /></div>
@@ -85,6 +91,7 @@ export default function UsersTab() {
                 <div className="col-md-3"><input className="form-control" placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} /></div>
                 <div className="col-md-3"><button className="btn btn-success w-100" onClick={handleCreate}>Create</button></div>
             </div>
+            <br/>
         </div>
     )
 }
