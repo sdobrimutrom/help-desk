@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 export default function TicketsTab() {
     const [tickets, setTickets] = useState<any[]>([]);
     const [technicians, setTechnicians] = useState<any[]>([]);
+    const [statusFilter, setStatusFilter] = useState("all");
     const token = localStorage.getItem("access_token");
     
     async function fetchTickets() {
@@ -50,8 +51,22 @@ export default function TicketsTab() {
     return (
         <div>
             <h3>All tickets</h3>
+            <div className="mb-3">
+                <label className="form-label">Filter for status:</label>
+                <select
+                    className="form-select w-auto"
+                    value={statusFilter}
+                    onChange={(e) => setStatusFilter(e.target.value)}>
+                        <option value="all">All</option>
+                        <option value="open">Open</option>
+                        <option value="in_progress">In progress</option>
+                        <option value="closed">Closed</option>
+                    </select>
+            </div>
             <ul className="list-group">
-                {tickets.map((ticket) => (
+                {tickets
+                    .filter(ticket => statusFilter === "all" || ticket.status === statusFilter)
+                    .map((ticket) => (
                     <li className="list-group-item" key = {ticket.id}>
                         <div className="d-flex justify-content-between align-items-center">
                             <span>
