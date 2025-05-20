@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 export default function MyTicketsPage() {
     const [tickets, setTickets] = useState<any[]>([]);
     const [error, setError] = useState("");
+    const [filterStatus, setFilterStatus] = useState("all");
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -16,13 +17,24 @@ export default function MyTicketsPage() {
     return (
         <div className="container mt-4">
             <h1 className="mb-3">My tickets</h1>
+            <div className="mb-4">
+                <label className="form-label">Filter for status:</label>
+                <select className="form-select w-auto" value={filterStatus} onChange={e => setFilterStatus(e.target.value)}>
+                    <option value={"all"}>All</option>
+                    <option value={"open"}>Open</option>
+                    <option value={"in_progress"}>In progress</option>
+                    <option value={"closed"}>Closed</option>
+                </select>
+            </div>
             {error && <div className="alert alert-danger">{error}</div>}
 
             {tickets.length === 0 ? (
                 <p>No tickets</p>
             ) : (
                 <div className="row g-4">
-                    {tickets.map(ticket => (
+                    {tickets
+                        .filter(ticket => filterStatus === "all" || ticket.status === filterStatus)
+                        .map(ticket => (
                         <div className="col-md-4" key={ticket.id}>
                             <div className="card p-3 h-100">
                                 <h2>#{ticket.id}: {ticket.title}</h2>
