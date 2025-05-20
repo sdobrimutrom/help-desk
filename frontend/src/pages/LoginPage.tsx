@@ -34,6 +34,9 @@ export default function LoginPage() {
                     {error && <div className="alert alert-danger">{error}</div>}
                     <button className="btn btn-primary w-100" type="submit">Login</button>
                 </form>
+                <p className="text-center mt-2">
+                    <button className="btn btn-link" onClick={() => navigate("/forgot-password")}>Forgot password?</button>
+                </p>
                 <hr/>
                 <p className="text-center">No account?</p>
                 <button className="btn btn-outline-secondary w-100" onClick={() => navigate("/register")}>Create new account</button>

@@ -8,6 +8,8 @@ import ChangePasswordPage from "./pages/ChangePasswordPage";
 import HomePage from "./pages/HomePage";
 import ProfilePage from "./pages/ProfilePage";
 import AssignedTicketsPage from "./pages/AssignedTicketsPage";
+import ForgotPasswordPage from "./pages/ForgotPasswordPage";
+import ResetPasswordPage from "./pages/ResetPasswordPage";
 import PrivateRoute from "./components/PrivateRoute";
 import AdminPanelPage from "./pages/AdminPanelPage";
 import Header from "./components/Header";
@@ -95,7 +97,9 @@ function App() {
             </PrivateRoute>
           }
         />
-      
+
+        <Route path="/forgot-password" element={<ForgotPasswordPage/>}/>    
+        <Route path="/reset/:uid64/:token" element={<ResetPasswordPage/>}/>
       </Routes>
     </Router>
   );
