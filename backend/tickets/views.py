@@ -4,6 +4,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.exceptions import PermissionDenied
 from django.core.cache import cache
+from django_redis import get_redis_connection
 from .models import Ticket, Comment, Category
 from .serializers import TicketSerializer, CommentSerializer, CategorySerializer
 from .permissions import CanCommentOnTicket, CanDeleteTicket
@@ -19,11 +20,13 @@ class TicketViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
-        cache_key = f"ticket_list_{user.id}_{user.role}"
-        cached_qs = cache.get(cache_key)
+        cache_key = f"ticket_list_ids_{user.id}_{user.role}"
+        logger.info(f"[CACHE] GET key={cache_key}")
+        cached_ids = cache.get(cache_key)
 
-        if cached_qs:
-            return cached_qs
+        if cached_ids:
+            logger.info(f"[CACHE] HIT")
+            return Ticket.objects.filter(id__in=cached_ids)
 
         if user.is_admin():
             qs = Ticket.objects.all()
@@ -31,8 +34,10 @@ class TicketViewSet(viewsets.ModelViewSet):
             qs = Ticket.objects.filter(assigned_to=user)
         else:
             qs = Ticket.objects.filter(created_by=user)
-        
-        cache.set(cache_key, qs, timeout=60)
+
+        ids = list(qs.values_list("id", flat=True))
+        cache.set(cache_key, ids, timeout=60)
+        logger.info(f"[CACHE] MISS + SET IDs: {ids}")
         return qs
 
     def perform_create(self, serializer):
@@ -42,16 +47,36 @@ class TicketViewSet(viewsets.ModelViewSet):
 
     def partial_update(self, request, *args, **kwargs):
         instance = self.get_object()
+
         if request.user.is_admin() and "assigned_to" in request.data:
             user_id = request.data.get("assigned_to")
             try:
-                technician = User.objects.get(id = user_id, role = User.Role.TECHNICIAN)
+                technician = User.objects.get(id=user_id, role=User.Role.TECHNICIAN)
                 instance.assigned_to = technician
                 instance.save()
-                logger.info(f"[TICKET UPDATED] {self.request.user.username} updated ticket ID {ticket.id}")
+
+                from django_redis import get_redis_connection
+                redis = get_redis_connection("default")
+                for user_id in [instance.created_by.id, technician.id]:
+                    keys = redis.keys(f"helpdesk:ticket_list_*_{user_id}")
+                    for key in keys:
+                        redis.delete(key)
+
+                logger.info(f"[TICKET UPDATED] {request.user.username} assigned ticket {instance.id} to {technician.username}")
             except User.DoesNotExist:
-                return Response({"error": "Technician is not found"}, status=400)
+                return Response({"error": "Technician not found"}, status=400)
+
         return super().partial_update(request, *args, **kwargs)
+    
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        user_id = instance.created_by.id
+
+        cache.delete_pattern(f"ticket_list_ids_{user_id}_*")
+        if instance.assigned_to:
+            cache.delete_pattern(f"ticket_list_{instance.assigned_to.id}_*")
+
+        return super().destroy(request, *args, **kwargs)
 
 class CommentViewSet(viewsets.ModelViewSet):
     queryset = Comment.objects.all().order_by('-created_at')
@@ -65,11 +90,11 @@ class CommentViewSet(viewsets.ModelViewSet):
         if user.is_admin():
             pass
         elif user.is_technician() and ticket.assigned_to != user:
-            raise PermissionDenied("У вас нет доступа к этому тикету.")
+            raise PermissionDenied("You don't have an access to this ticket.")
         elif user.is_employee() and ticket.created_by != user:
-            raise PermissionDenied("У вас нет доступа к этому тикету.")
+            raise PermissionDenied("You don't have an access to this ticket.")
         elif not user.is_admin() and not user.is_technician() and not user.is_employee():
-            raise PermissionDenied("Роль не определена.")
+            raise PermissionDenied("Permission denied.")
         
         comment = serializer.save(author=user)
         logger.info(f"[COMMENT ADDED] {self.request.user.username} added a comment to ticket {comment.ticket.id}")
@@ -108,3 +133,4 @@ class CategoryViewSet(viewsets.ModelViewSet):
     queryset = Category.objects.all().order_by('name')
     serializer_class = CategorySerializer
     permission_classes = [IsAuthenticated]
+
