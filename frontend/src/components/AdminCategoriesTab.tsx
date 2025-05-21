@@ -41,7 +41,7 @@ export default function CategoriesTab() {
 
   return (
     <div>
-      <h5>Категории</h5>
+      <h5>Categories</h5>
       <div className="mb-3 d-flex gap-2">
         <input className="form-control" placeholder="New category" value={name} onChange={e => setName(e.target.value)} />
         <button className="btn btn-success" onClick={handleCreate}>Add</button>
