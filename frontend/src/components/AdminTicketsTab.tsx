@@ -29,11 +29,11 @@ export default function TicketsTab() {
     }, []);
 
     async function handleDelete(id: number) {
-        await fetch(`http://localhost:8000/api/tickets/${id}/`, {
+        const res = await fetch(`http://localhost:8000/api/tickets/${id}/`, {
             method: 'DELETE',
             headers: { Authorization: `Bearer ${token}` },
         });
-        fetchTickets();
+        if (res.ok) fetchTickets();
     }
 
     async function assignTechnician(ticketId: number, technicianId: string) {
@@ -75,12 +75,12 @@ export default function TicketsTab() {
                             <div className="d-flex gap-2">
                                 <select
                                     className="form-select form-select-sm"
-                                    value={ticket.assigned_to || ""}
+                                    value={ticket.assigned_to?.toString() || ""}
                                     onChange={(e) => assignTechnician(ticket.id, e.target.value)}
                                 >
                                     <option value="">Not assigned</option>
                                     {technicians.map((t) => (
-                                        <option key={t.id} value={t.id}>
+                                        <option key={t.id} value={t.id.toString()}>
                                             {t.username}
                                         </option>
                                     ))}
