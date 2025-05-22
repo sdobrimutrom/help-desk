@@ -11,6 +11,7 @@ export async function loginUser(username: string, password: string): Promise<str
 
     const data = await response.json();
     localStorage.setItem("access_token", data.access);
+    localStorage.setItem("refresh_token", data.refersh);
     return data.access;
 }
 
@@ -27,17 +28,21 @@ export async function registerUser(username: string, password: string, email?: s
 export async function fetchCurrentUser(): Promise<any> {
     const token = localStorage.getItem("access_token");
 
-    const response = await fetch("http://localhost:8000/api/user/", {
-        headers: {
-            Authorization: `Bearer ${token}`,
-        },
+    let res = await fetch("http://localhost:8000/api/user/", {
+        headers: { Authorization: `Bearer ${token}` },
     });
 
-    if (!response.ok) {
-        throw new Error("Can't get user");
+    if (res.status === 401) {
+        const newToken = await refreshAccessToken();
+        if (!newToken) throw new Error("Unauthorized");
+
+    res = await fetch("http://localhost:8000/api/user/", {
+      headers: { Authorization: `Bearer ${newToken}` },
+    });
     }
 
-    return await response.json();
+    if (!res.ok) throw new Error("Unauthorized");
+    return await res.json();
 }
 
 export async function changePassword(oldPassword: string, newPassword: string): Promise<boolean> {
@@ -56,4 +61,20 @@ export async function changePassword(oldPassword: string, newPassword: string): 
     });
 
     return response.ok;
+}
+
+export async function refreshAccessToken(): Promise<string | null> {
+    const refresh = localStorage.getItem("refresh_token");
+    if (!refresh) return null;
+
+    const res = await fetch("http://localhost:8000/api/token/refresh/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ refresh }),
+    });
+
+    if (!res.ok) return null;
+    const data = await res.json();
+    localStorage.setItem("access_token", data.access);
+    return data.access;
 }

@@ -1,10 +1,10 @@
-# HelpDesk — Fullstack system to handle tickets
+# HelpDesk — Fullstack Ticketing System
 
-The project is a complete HelpDesk system for internal use in a company or institution. Employees can create requests, technicians can process them, and the administrator manages users, tickets and categories.
+HelpDesk is a full-featured web application for internal ticket management. Employees can create support tickets, technicians can work on them, and administrators manage users, tickets, and categories.
 
 ---
 
-## 🛠 Technologies Stack
+## 🛠 Technologies Used
 
 ### Backend:
 - Python 3.10
@@ -12,13 +12,12 @@ The project is a complete HelpDesk system for internal use in a company or insti
 - Django REST Framework
 - SimpleJWT (authentication)
 - Redis (caching)
-- Django CORS, dotenv, Pillow
+- CORS, dotenv, Pillow
 
 ### Frontend:
 - React + TypeScript
 - Bootstrap 5
 - React Router
-- Fetch API
 
 ### Infrastructure:
 - Docker + Docker Compose
@@ -26,62 +25,49 @@ The project is a complete HelpDesk system for internal use in a company or insti
 
 ---
 
-## 🚀 How to run
+## 🧩 User Roles
 
-### 🔧 Locally (DEV)
+| Role         | Permissions                                                                |
+|--------------|----------------------------------------------------------------------------|
+| `employee`   | Creates tickets, views their own tickets, can comment only on their own   |
+| `technician` | Sees tickets assigned to them, can comment and change status              |
+| `admin`      | Accesses `/admin`: manage users, assign technicians, control categories   |
 
-#### 1. Clone project:
+---
+
+## 🚀 Run Instructions
+
+### 🔧 Local (DEV)
 
 ```bash
-git clone https://github.com/sdobrimutrom/help-desk.git
+# clone the project
+git clone https://github.com/your-username/helpdesk-project.git
 cd helpdesk-project
-```
 
-#### 2. Install dependencies:
-
-```bash
-cd backend
-python -m venv venv
-venv\Scripts\activate
-pip install -r requirements.txt
-```
-
-```bash
-cd frontend
-npm install
-```
-
-#### 3. Create `.env` file:
-
-```bash
-cp .env.dev .env
-```
-
-#### 4. Run:
-
-```bash
 # backend
 cd backend
-python manage.py runserver
+python -m venv venv
+venv\Scripts\activate  # or source venv/bin/activate
+pip install -r requirements.txt
 
 # frontend
-cd frontend
+cd ../frontend
+npm install
+
+# copy env
+cp .env.dev .env
+
+# run
+python ../backend/manage.py runserver
 npm run dev
 ```
 
 ---
 
-### 🐳 With Docker
-
-#### 1. Create `.env.docker`
+### 🐳 Docker
 
 ```bash
 cp .env.docker .env
-```
-
-#### 2. Run build:
-
-```bash
 docker-compose up --build
 ```
 
@@ -91,43 +77,63 @@ docker-compose up --build
 
 ---
 
-## ⚙️ Variables `.env`
-
-| Variable       | Purpose                         |
-|----------------|---------------------------------|
-| `DEBUG`        | True/False                      |
-| `SECRET_KEY`   | Django Secret                   |
-| `REDIS_HOST`   | redis / localhost               |
-| `ALLOWED_HOSTS`| list of allowed hosts           |
-| `FRONTEND_URL` | Frontend URL                    |
-|----------------|---------------------------------|
 ---
 
-## 🔁 Caching
+## 🔑 Creating Superuser in Docker
 
-- Redis is caching tickets, comments and user`s profile
-- Keys dropping after changes
-- Configuration in `settings.py`
+```bash
+# Create superuser
+docker exec -it helpdesk-backend python manage.py createsuperuser
+
+# Then assign 'admin' role:
+docker exec -it helpdesk-backend python manage.py shell
+>>> from users.models import User
+>>> u = User.objects.get(username="admin")
+>>> u.role = "admin"
+>>> u.save()
+>>> exit()
+```
+---
+
+## ⚙️ .env variables
+
+| Variable       | Description                             |
+|----------------|------------------------------------------|
+| `DEBUG`        | True/False                               |
+| `SECRET_KEY`   | Django secret key                        |
+| `REDIS_HOST`   | redis (in docker) / localhost (local dev)|
+| `ALLOWED_HOSTS`| list of allowed domains                  |
+| `FRONTEND_URL` | used for password reset links            |
 
 ---
 
-## 📝 Testing
+## ♻️ Caching
+
+- Redis is used to cache:
+  - tickets per user
+  - comments per ticket
+  - user profiles
+- Keys are invalidated on update
+- Key format: `ticket_list_{user_id}_{role}`
+
+---
+
+## 🧪 Testing
 
 ```bash
 python manage.py test
 ```
 
-Coverage:
-- Models and serializators
-- Sign Up / Log In / Tickets / Access Rights
+- model & API tests included: login, roles, access control
 
 ---
 
-## 📦 Documentation and additional files
+## 📦 Structure
 
+- `backend/` – Django API
+- `frontend/` – React UI
+- `nginx/` – nginx proxy config
+- `.env.*` – environment files
 - `docker-compose.yml`
-- `nginx/default.conf`
-- `.env.example`
-- `requirements.txt`
 
 ---

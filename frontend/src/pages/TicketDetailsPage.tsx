@@ -49,7 +49,7 @@ export default function TicketDetailsPage() {
         <div className="container my-4">
             <div className="card p-4 mb-4 shadow-sm">
                 <h4 className="mb-3">Ticket #{ticket.id}: {ticket.title}</h4>
-                <p><b>Category:</b> {ticket.category || "no category"}</p>
+                <p><b>Category:</b> {ticket.category_name || "no category"}</p>
                 <p><b>Technician:</b> {ticket.assigned_to_username || "not assigned yet"}</p>
                 <p><b>Status:</b> {ticket.status}</p>
                 <p><b>Description:</b> {ticket.description}</p>
