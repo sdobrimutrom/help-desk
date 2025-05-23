@@ -46,7 +46,7 @@ export default function ProfilePage() {
     return (
       <div className="container d-flex justify-content-center mt-5">
         <div className="card p-4 shadow" style={{ maxWidth: "500px", width: "100%" }}>
-          <h4 className="text-center mb-4">Профиль</h4>
+          <h4 className="text-center mb-4">Profile</h4>
 
           {!editMode ? (
             <>
@@ -80,7 +80,7 @@ export default function ProfilePage() {
               </div>
               <div className="d-flex gap-2">
                 <button className="btn btn-success w-100" type="submit">Save</button>
-                <button className="btn btn-outline-secondary w-100" type="button" onClick={() => setEditMode(false)}>Отмена</button>
+                <button className="btn btn-outline-secondary w-100" type="button" onClick={() => setEditMode(false)}>Cancel</button>
               </div>
             </form>
           )}

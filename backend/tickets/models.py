@@ -9,9 +9,9 @@ class Category(models.Model):
     
 class Ticket(models.Model):
     STATUS_CHOICES = [
-        ('open', 'Открыта'),
-        ('in_progress', 'В работе'),
-        ('closed', 'Закрыта')
+        ('open', 'Open'),
+        ('in_progress', 'In progress'),
+        ('closed', 'Closed')
     ]
 
     title = models.CharField(max_length=255)
@@ -35,4 +35,6 @@ class Comment(models.Model):
     image = models.ImageField(upload_to='comments/', null = True, blank=True)
 
     def __str__(self):
-        return f"Комментарий от {self.author.username} к {self.ticket.title}"
+        return f"Comment from {self.author.username} to {self.ticket.title}"
+    
+    

@@ -60,6 +60,20 @@ cp .env.dev .env
 # run
 python ../backend/manage.py runserver
 npm run dev
+
+#redis
+
+docker run --name redis-local -p 6379:6379 -d redis
+
+OR
+
+sudo apt install redis
+redis-server
+
+OR
+
+download https://www.memurai.com/download
+Install and run "Start server"
 ```
 
 ---
