@@ -15,12 +15,14 @@ HelpDesk is a full-featured web application for internal ticket management. Empl
 - CORS, dotenv, Pillow
 
 ### Frontend:
+- Node: 18.x
+- npm 9.x
 - React + TypeScript
 - Bootstrap 5
 - React Router
 
 ### Infrastructure:
-- Docker + Docker Compose
+- Docker (20.x) + Docker Compose (1.29+)
 - NGINX as reverse proxy
 
 ---
@@ -39,43 +41,58 @@ HelpDesk is a full-featured web application for internal ticket management. Empl
 
 ### 🔧 Local (DEV)
 
+1. Clone the project
 ```bash
-# clone the project
 git clone https://github.com/your-username/helpdesk-project.git
 cd helpdesk-project
-
+```
+2. Install backend dependencies
+```bash
 # backend
 cd backend
 python -m venv venv
 venv\Scripts\activate  # or source venv/bin/activate
 pip install -r requirements.txt
+```
+3. Apply migrations:
+```bash
+cd ../backend
+python manage.py makemigrations
+python manage.py migrate
+```
 
+4. Install frontend dependencies
+```bash
 # frontend
 cd ../frontend
 npm install
-
+```
+5. Copy .env.dev file
+```bash
 # copy env
 cp .env.dev .env
-
-# run
-python ../backend/manage.py runserver
-npm run dev
-
-#redis
-
+```
+6. Run Redis locally
+```bash
+#via docker
 docker run --name redis-local -p 6379:6379 -d redis
-
-OR
-
+```
+```bash
+#for linux
 sudo apt install redis
 redis-server
-
-OR
-
+```
+```bash
+#for windows
 download https://www.memurai.com/download
 Install and run "Start server"
 ```
 
+7. Create super user
+```bash
+cd backend
+python manage.py createsuperuser
+```
 ---
 
 ### 🐳 Docker
@@ -91,21 +108,11 @@ docker-compose up --build
 
 ---
 
----
-
 ## 🔑 Creating Superuser in Docker
 
 ```bash
 # Create superuser
 docker exec -it helpdesk-backend python manage.py createsuperuser
-
-# Then assign 'admin' role:
-docker exec -it helpdesk-backend python manage.py shell
->>> from users.models import User
->>> u = User.objects.get(username="admin")
->>> u.role = "admin"
->>> u.save()
->>> exit()
 ```
 ---
 
@@ -149,5 +156,6 @@ python manage.py test
 - `nginx/` – nginx proxy config
 - `.env.*` – environment files
 - `docker-compose.yml`
+- `backend/logs/helpdesk.log` - file with logs
 
 ---

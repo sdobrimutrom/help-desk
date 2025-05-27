@@ -198,6 +198,14 @@ LOGGING = {
     },
 }
 
+LOG_DIR = BASE_DIR / "logs"
+LOG_FILE = LOG_DIR / "helpdesk.log"
+
+if not LOG_DIR.exists():
+    LOG_DIR.mkdir()
+if not LOG_FILE.exists():
+    LOG_FILE.touch()
+
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 DEFAULT_FROM_EMAIL = 'noreply@helpdesk.local'
 

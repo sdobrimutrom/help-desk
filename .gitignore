@@ -12,6 +12,7 @@ instance/
 media/
 staticfiles/
 static/
+logs/
 
 # VSCode and PyCharm
 .vscode/
