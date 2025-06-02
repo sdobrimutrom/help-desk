@@ -3,6 +3,7 @@ import { Tabs, Tab } from "react-bootstrap";
 import UsersTab from "../components/AdminUsersTab";
 import TicketsTab from "../components/AdminTicketsTab";
 import CategoriesTab from "../components/AdminCategoriesTab";
+import StatisticsTab from "../components/AdminStatisticsTab";
 
 export default function AdminPanelPage() {
     const [key, setKey] = useState("users");
@@ -19,6 +20,9 @@ export default function AdminPanelPage() {
                 </Tab>
                 <Tab eventKey="categories" title="Categories">
                     <CategoriesTab/>
+                </Tab>
+                <Tab eventKey="statistics" title="Statistics">
+                    <StatisticsTab/>
                 </Tab>
             </Tabs>
         </div>
