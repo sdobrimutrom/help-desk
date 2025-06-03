@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { loginUser } from "../api/auth";
 import { useNavigate } from "react-router-dom";
 
@@ -7,6 +7,13 @@ export default function LoginPage() {
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
     const navigate = useNavigate();
+
+    useEffect(() => {
+        const token = localStorage.getItem("access_token");
+        if (token) {
+            navigate("/home");
+        }
+    }, []);
 
     async function handleLogin(e: React.FormEvent) {
         e.preventDefault();

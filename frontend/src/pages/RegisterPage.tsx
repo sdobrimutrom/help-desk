@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { registerUser, loginUser } from "../api/auth";
 import { useNavigate } from "react-router-dom";
 
@@ -10,11 +10,23 @@ export default function RegisterPage() {
     const [error, setError] = useState("");
     const navigate = useNavigate();
 
+    useEffect(() => {
+        const token = localStorage.getItem("access_token");
+        if (token) {
+            navigate("/home");
+        }
+    }, []);
+
     async function handleRegister(e: React.FormEvent) {
         e.preventDefault()
 
         if (password != confirmPassword) {
             setError("Passwords do not match");
+            return;
+        }
+
+        if (!email.includes("@") || !email.includes(".")) {
+            setError("Invalid email format");
             return;
         }
 

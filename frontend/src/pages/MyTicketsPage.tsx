@@ -14,6 +14,15 @@ export default function MyTicketsPage() {
             .catch(() => setError("Failed to load tickets"));
     }, []);
 
+    function getStatusColor(status: string) {
+        switch (status) {
+            case "open": return "primary";
+            case "in_progress": return "warning";
+            case "closed": return "success";
+            default: return "secondary";
+        }
+    }
+
     return (
         <div className="container mt-4">
             <h1 className="mb-3">My tickets</h1>
@@ -38,7 +47,7 @@ export default function MyTicketsPage() {
                         <div className="col-md-4" key={ticket.id}>
                             <div className="card p-3 h-100">
                                 <h2>#{ticket.id}: {ticket.title}</h2>
-                                <p><b>Status:</b> {ticket.status}</p>
+                                <p><b>Status:</b> <span className={`badge bg-${getStatusColor(ticket.status)}`}>{ticket.status.replace("_", " ")}</span></p>
                                 <p><b>Created at:</b> {ticket.created_at.slice(0, 10)}</p>
                                 <button className="btn btn-outline-primary mt-auto" onClick={() => navigate(`/tickets/${ticket.id}`)}>More</button>
                             </div>

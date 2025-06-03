@@ -48,6 +48,15 @@ export default function TicketsTab() {
         fetchTickets();
     }
 
+    function getStatusColor(status: string) {
+        switch (status) {
+            case "open": return "primary";
+            case "in_progress": return "warning";
+            case "closed": return "success";
+            default: return "secondary";
+        }
+    }
+
     return (
         <div>
             <h3>All tickets</h3>
@@ -70,7 +79,7 @@ export default function TicketsTab() {
                     <li className="list-group-item" key = {ticket.id}>
                         <div className="d-flex justify-content-between align-items-center">
                             <span>
-                                #{ticket.id}: {ticket.title} ({ticket.status})
+                                #{ticket.id}: {ticket.title} <span className={`badge bg-${getStatusColor(ticket.status)}`}>{ticket.status.replace("_", " ")}</span>
                             </span>
                             <div className="d-flex gap-2">
                                 <select
