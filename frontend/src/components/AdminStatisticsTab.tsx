@@ -53,6 +53,10 @@ export default function StatisticsTab() {
 
   return (
     <div className="p-4">
+      <div className="d-flex gap-2 mt-3">
+        <a href="http://localhost/prometheus/" className="btn btn-outline-secondary" target="_blank">Prometheus</a>
+        <a href="http://localhost/grafana/" className="btn btn-outline-secondary" target="_blank">Grafana</a>
+      </div>
       <h3 className="mb-4">📊 Ticket Statistics Overview</h3>
 
       <div className="row">
