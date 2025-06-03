@@ -24,6 +24,7 @@ HelpDesk is a full-featured web application for internal ticket management. Empl
 ### Infrastructure:
 - Docker (20.x) + Docker Compose (1.29+)
 - NGINX as reverse proxy
+- Prometheus + Grafana
 
 ---
 
@@ -149,6 +150,28 @@ python manage.py test
 
 ---
 
+## 📊 Monitoring (Prometheus + Grafana)
+Monitoring is built-in and launches automatically with Docker Compose.
+
+### What's included
+- **Prometheus** - colllects internal metrics from Django (via `/metrics/`)
+- **Grafana** - visualizes request rates, errors,latency, and more
+
+### Access
+| Service     | URL                             | Credentials       |
+|-------------|----------------------------------|-------------------|
+| Prometheus  | http://localhost/prometheus/    | (no login needed) |
+| Grafana     | http://localhost/grafana/       | admin / admin     |
+
+> ⚠ Prometheus is only accessible from `localhost` (for security)
+### 🔄 Reset password (Grafana)
+
+If you forget Grafana login, run:
+
+```bash
+docker exec -it helpdesk-grafana grafana-cli admin reset-admin-password admin
+```
+---
 ## 📦 Structure
 
 - `backend/` – Django API
