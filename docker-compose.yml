@@ -9,6 +9,7 @@ services:
       - ./backend:/app
       - static_volume:/app/static
       - media_volume:/app/media
+      - logs_volume:/var/log/django
     ports:
       - "8000:8000"
     depends_on:
@@ -83,7 +84,29 @@ services:
     depends_on:
       - redis
 
+  loki: 
+    image: grafana/loki:latest
+    container_name: helpdesk-loki
+    ports:
+      - "3100:3100"
+    command: -config.file=/etc/loki/local-config.yml
+    networks:
+      - default
+
+  promtail:
+    image: grafana/promtail:latest
+    container_name: helpdesk-promtail
+    volumes:
+      - logs_volume:/var/log/django
+      - ./promtail-config.yml:/etc/promtail/config.yml
+    command: -config.file=/etc/promtail/config.yml
+    depends_on:
+      - loki
+    networks:
+      - default
+
 volumes:
   static_volume:
   media_volume:
   grafana_data:
+  logs_volume:

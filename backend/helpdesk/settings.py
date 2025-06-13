@@ -31,6 +31,14 @@ DEBUG = True
 
 ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
 
+LOG_DIR = '/var/log/django'
+LOG_FILE = os.path.join(LOG_DIR, 'helpdesk.log')
+
+if not os.path.exists(LOG_DIR):
+    os.makedirs(LOG_DIR, exist_ok=True)
+if not os.path.exists(LOG_FILE):
+    open(LOG_FILE, 'a').close()
+
 
 # Application definition
 
@@ -177,7 +185,7 @@ LOGGING = {
         'file': {
             'level': 'INFO',
             'class': 'logging.FileHandler',
-            'filename': os.path.join(BASE_DIR, 'logs', 'helpdesk.log'),
+            'filename': LOG_FILE,
             'formatter': 'verbose',
         },
         'console': {
@@ -201,13 +209,6 @@ LOGGING = {
     },
 }
 
-LOG_DIR = BASE_DIR / "logs"
-LOG_FILE = LOG_DIR / "helpdesk.log"
-
-if not LOG_DIR.exists():
-    LOG_DIR.mkdir()
-if not LOG_FILE.exists():
-    LOG_FILE.touch()
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 DEFAULT_FROM_EMAIL = 'noreply@helpdesk.local'
