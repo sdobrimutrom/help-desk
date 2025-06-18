@@ -31,15 +31,6 @@ DEBUG = True
 
 ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
 
-LOG_DIR = '/var/log/django'
-LOG_FILE = os.path.join(LOG_DIR, 'helpdesk.log')
-
-if not os.path.exists(LOG_DIR):
-    os.makedirs(LOG_DIR, exist_ok=True)
-if not os.path.exists(LOG_FILE):
-    open(LOG_FILE, 'a').close()
-
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -182,12 +173,6 @@ LOGGING = {
     },
 
     'handlers': {
-        'file': {
-            'level': 'INFO',
-            'class': 'logging.FileHandler',
-            'filename': LOG_FILE,
-            'formatter': 'verbose',
-        },
         'console': {
             'level': 'DEBUG',
             'class': 'logging.StreamHandler',
@@ -197,12 +182,12 @@ LOGGING = {
 
     'loggers': {
         'django': {
-            'handlers': ['file', 'console'],
+            'handlers': ['console'],
             'level': 'INFO',
             'propagate': True,
         },
         'helpdesk': {
-            'handlers': ['file', 'console'],
+            'handlers': ['console'],
             'level': 'DEBUG',
             'propagate': False,
         },

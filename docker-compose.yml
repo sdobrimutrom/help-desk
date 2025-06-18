@@ -62,8 +62,11 @@ services:
       - "3001:3000"
     depends_on:
       - prometheus
+      - loki
     volumes:
       - grafana_data:/var/lib/grafana
+    environment:
+      - GF_FEATURE_TOGGLES_ENABLE=logs
 
   node-exporter:
     image: prom/node-exporter
@@ -84,20 +87,18 @@ services:
     depends_on:
       - redis
 
-  loki: 
-    image: grafana/loki:latest
+  loki:
+    image: grafana/loki:2.9.1
     container_name: helpdesk-loki
     ports:
       - "3100:3100"
-    command: -config.file=/etc/loki/local-config.yml
-    networks:
-      - default
+    command: -config.file=/etc/loki/local-config.yaml
 
   promtail:
     image: grafana/promtail:latest
     container_name: helpdesk-promtail
     volumes:
-      - logs_volume:/var/log/django
+      - /var/run/docker.sock:/var/run/docker.sock
       - ./promtail-config.yml:/etc/promtail/config.yml
     command: -config.file=/etc/promtail/config.yml
     depends_on:
